@@ -54,3 +54,7 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Private documentation (local only)
+DETAILED_EXPLANATION.md
+TEST_RESULTS.md
