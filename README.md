@@ -264,7 +264,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Head Count Project Team**
 - Internship Project - MS Studies
-- Date: December 2025
+- Date: April 2024
 
 ## 🙏 Acknowledgments
 
