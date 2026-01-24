@@ -281,4 +281,43 @@ For questions, issues, or suggestions:
 
 ---
 
+## 🐛 Development Challenges & Bug Fixes
+
+Transparency is key to good engineering. Here are some real challenges encountered during development and how they were resolved:
+
+### 1. The "Ghost" Lag (Video Sync Issue)
+**The Bug**: During initial testing with high-resolution video (1080p), the detection output lagged significantly behind the real-time action. The processing speed (~10 FPS) couldn't keep up with the video input (30 FPS), causing a "slow motion" effect where the system was always seconds behind reality.
+
+**Diagnosis**: The system was trying to process *every single frame*. YOLOv5 inference takes ~50-100ms on a standard CPU, so processing 30 frames takes 1.5-3 seconds of compute time for every 1 second of video.
+
+**The Fix**: Implemented **Frame Skipping logic** in `video_processor.py`.
+- **Logic**: `if frame_number % (self.frame_skip + 1) != 0: continue`
+- **Result**: By processing only every 2nd or 3rd frame, we tripled the effective speed without losing significant accuracy, as people don't move that fast in 0.1 seconds.
+
+### 2. The Dependency "Hell"
+**The Bug**: When first running `quick_test.py`, the system crashed with `ModuleNotFoundError: No module named 'tqdm'`.
+
+**Thought Process**: Even though `ultralytics` (YOLOv5) was installed, some of its sub-dependencies weren't automatically resolved in the environment because `torch.hub.load` dynamically downloads code that expects certain packages to be present globally.
+
+**The Fix**: updated `requirements.txt` to explicitly include all secondary dependencies (`tqdm`, `scipy`, `pillow`, `seaborn`) ensuring a "batteries-included" experience for the user.
+
+### 3. Alert Fatigue (The "Spamming" Bug)
+**The Bug**: When a bus was overcrowded (e.g., 72 people), the system sent a critical alert for *every single frame* processed. This resulted in 100+ logical alerts appearing in the logs within seconds.
+
+**Diagnosis**: The alert condition `if count > threshold` was true 10 times a second. We needed a way to "remember" that we just sent an alert.
+
+**The Fix**: Built a **Cooldown Mechanism** in `alert_system.py`.
+- **Implementation**: Added `self.last_alert_time` and `self.cooldown_seconds`.
+- **Logic**: `time_since_last_alert < self.cooldown_seconds`
+- **Outcome**: The system now sends one alert and then waits 60 seconds (configurable) before bothering the user again.
+
+### 4. False Positives on Static Objects
+**The Bug**: In one test case, a poster on the bus wall featuring a person was consistently detected as a passenger, artificially inflating result counts.
+
+**The Fix**: While retraining the model is the ultimate fix, as an immediate engineering solution, we implemented **Confidence Thresholding**.
+- **Change**: Increased default `CONFIDENCE_THRESHOLD` in `config.py` from 0.25 to 0.40.
+- **Reasoning**: Real people usually have higher detection confidence (0.6 - 0.9) than 2D posters (often 0.3 - 0.5). Raising the bar filtered out the noise.
+
+---
+
 **Note**: This system is designed for monitoring and optimization purposes. Ensure compliance with privacy regulations and obtain necessary permissions before deploying cameras in public transport vehicles.
