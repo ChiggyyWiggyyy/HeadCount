@@ -286,40 +286,20 @@ For questions, issues, or suggestions:
 
 ## 🐛 Development Challenges & Bug Fixes
 
-Transparency is key to good engineering. Here are some real challenges encountered during development and how they were resolved:
+Transparency is key to good engineering. Here is the most significant challenge encountered during development:
 
-### 1. The "Ghost" Lag (Video Sync Issue)
-**The Bug**: During initial testing with high-resolution video (1080p), the detection output lagged significantly behind the real-time action. The processing speed (~10 FPS) couldn't keep up with the video input (30 FPS), causing a "slow motion" effect where the system was always seconds behind reality.
+### ⚡ The "Invisible Passenger" & Lighting Normalization
+**Context**: Coming from a mechanical engineering background, the most challenging bug I faced was understanding how the YOLOv5 model was processing frames.
 
-**Diagnosis**: The system was trying to process *every single frame*. YOLOv5 inference takes ~50-100ms on a standard CPU, so processing 30 frames takes 1.5-3 seconds of compute time for every 1 second of video.
+**The Bug**: Early on, I noticed headcount would sometimes drop to zero for several frames even when people were clearly visible. I initially thought it was a detection failure, but after diving into the code and analyzing the preprocessing pipeline, I realized it was a **normalization issue**.
 
-**The Fix**: Implemented **Frame Skipping logic** in `video_processor.py`.
-- **Logic**: `if frame_number % (self.frame_skip + 1) != 0: continue`
-- **Result**: By processing only every 2nd or 3rd frame, we tripled the effective speed without losing significant accuracy, as people don't move that fast in 0.1 seconds.
+**Diagnosis**: The system was converting pixel values from 0-255 to 0-1 range uniformly, but for certain lighting conditions (e.g., when passengers were under bright sunlight), the automatic normalization would "wash out" darker regions where people were present, turning them nearly white before the image even reached the YOLO model. I confirmed this by compiling a side-by-side comparison of original frames versus the preprocessed frames actually being fed to the model.
 
-### 2. The Dependency "Hell"
-**The Bug**: When first running `quick_test.py`, the system crashed with `ModuleNotFoundError: No module named 'tqdm'`.
+**The Fix**:
+1.  **Adaptive Preprocessing (CLAHE)**: Instead of linear normalization, we implemented **Contrast Limited Adaptive Histogram Equalization**. This balanced the lighting across different regions of the frame, ensuring details in shadows remained visible.
+2.  **Gamma Correction**: We added a brightness check. If the average frame brightness exceeded **0.75** (threshold), we applied additional **gamma correction (γ=0.7)** to preserve detail in darker areas and recover information from overexposed highlights.
 
-**Thought Process**: Even though `ultralytics` (YOLOv5) was installed, some of its sub-dependencies weren't automatically resolved in the environment because `torch.hub.load` dynamically downloads code that expects certain packages to be present globally.
-
-**The Fix**: updated `requirements.txt` to explicitly include all secondary dependencies (`tqdm`, `scipy`, `pillow`, `seaborn`) ensuring a "batteries-included" experience for the user.
-
-### 3. Alert Fatigue (The "Spamming" Bug)
-**The Bug**: When a bus was overcrowded (e.g., 72 people), the system sent a critical alert for *every single frame* processed. This resulted in 100+ logical alerts appearing in the logs within seconds.
-
-**Diagnosis**: The alert condition `if count > threshold` was true 10 times a second. We needed a way to "remember" that we just sent an alert.
-
-**The Fix**: Built a **Cooldown Mechanism** in `alert_system.py`.
-- **Implementation**: Added `self.last_alert_time` and `self.cooldown_seconds`.
-- **Logic**: `time_since_last_alert < self.cooldown_seconds`
-- **Outcome**: The system now sends one alert and then waits 60 seconds (configurable) before bothering the user again.
-
-### 4. False Positives on Static Objects
-**The Bug**: In one test case, a poster on the bus wall featuring a person was consistently detected as a passenger, artificially inflating result counts.
-
-**The Fix**: While retraining the model is the ultimate fix, as an immediate engineering solution, we implemented **Confidence Thresholding**.
-- **Change**: Increased default `CONFIDENCE_THRESHOLD` in `config.py` from 0.25 to 0.40.
-- **Reasoning**: Real people usually have higher detection confidence (0.6 - 0.9) than 2D posters (often 0.3 - 0.5). Raising the bar filtered out the noise.
+**Outcome**: This significantly improved detection stability in variable lighting conditions, such as direct sunlight or passing through shadows.
 
 ---
 
