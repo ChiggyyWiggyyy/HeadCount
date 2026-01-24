@@ -322,4 +322,28 @@ Transparency is key to good engineering. Here are some real challenges encounter
 
 ---
 
+## 🛠️ Git Workflow for Updates
+
+Here are the commands used to push updates to the repository:
+
+```bash
+# 1. Add all changes to the staging area
+git add .
+
+# 2. Commit the changes with a descriptive message
+git commit -m "Description of what you changed"
+
+# 3. Push changes to the main branch on GitHub
+git push origin main
+```
+
+If you encounter issues with pushing (e.g., updates were rejected), you can pull the latest changes first:
+
+```bash
+git pull --rebase origin main
+git push origin main
+```
+
+---
+
 **Note**: This system is designed for monitoring and optimization purposes. Ensure compliance with privacy regulations and obtain necessary permissions before deploying cameras in public transport vehicles.
