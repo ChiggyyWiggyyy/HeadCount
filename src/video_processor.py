@@ -65,6 +65,15 @@ class VideoProcessor:
         self.save_output = save_output if save_output is not None else VideoConfig.SAVE_OUTPUT_VIDEO
         self.show_preview = show_preview
         
+        # Initialize CLAHE if enabled (this would fix the ghost lag)
+        self.clahe = None
+        if VideoConfig.ENABLE_CLAHE:
+            self.clahe = cv2.createCLAHE(
+                clipLimit=VideoConfig.CLAHE_CLIP_LIMIT,
+                tileGridSize=VideoConfig.CLAHE_GRID_SIZE
+            )
+            logger.info(f"CLAHE preprocessing enabled (clip={VideoConfig.CLAHE_CLIP_LIMIT}, grid={VideoConfig.CLAHE_GRID_SIZE})")
+        
         # Processing statistics
         self.stats = {
             'total_frames': 0,
@@ -75,6 +84,32 @@ class VideoProcessor:
         }
         
         logger.info(f"VideoProcessor initialized (frame_skip={self.frame_skip}, save_output={self.save_output})")
+    
+    def apply_clahe(self, image: np.ndarray) -> np.ndarray:
+        """
+        Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) to image.
+        Converts to LAB color space, applies CLAHE to L-channel, and converts back.
+        """
+        if self.clahe is None:
+            return image
+            
+        try:
+            # Convert to LAB color space
+            lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+            l, a, b = cv2.split(lab)
+            
+            # Apply CLAHE to L-channel
+            cl = self.clahe.apply(l)
+            
+            # Merge channels
+            limg = cv2.merge((cl, a, b))
+            
+            # Convert back to BGR
+            enhanced_image = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+            return enhanced_image
+        except Exception as e:
+            logger.warning(f"CLAHE application failed: {e}")
+            return image
     
     def process_video(
         self,
@@ -160,7 +195,11 @@ class VideoProcessor:
                 
                 # Process frame
                 frame_start = time.time()
-                detection_result = self.detector.detect(frame)
+                
+                # Apply CLAHE preprocessing if enabled
+                processed_frame = self.apply_clahe(frame)
+                
+                detection_result = self.detector.detect(processed_frame)
                 frame_time = time.time() - frame_start
                 
                 self.stats['processed_frames'] += 1
@@ -254,9 +293,12 @@ class VideoProcessor:
         image = cv2.imread(str(image_path))
         if image is None:
             raise ValueError(f"Failed to read image: {image_path}")
+            
+        # Apply CLAHE preprocessing if enabled
+        processed_image = self.apply_clahe(image)
         
         # Detect passengers
-        detection_result = self.detector.detect(image)
+        detection_result = self.detector.detect(processed_image)
         passenger_count = detection_result['count']
         
         # Check for alerts

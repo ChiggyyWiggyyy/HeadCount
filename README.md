@@ -13,6 +13,7 @@ The **Head Count Project** is an advanced computer vision system designed to mon
 ### Key Features
 
 - **Real-time Passenger Detection**: Uses YOLOv5 deep learning model for accurate person detection
+- **Lighting Robustness**: CLAHE preprocessing for enhanced detection in varying lighting (this would fix the head count being off)
 - **Multi-level Alert System**: Configurable thresholds (Normal, Warning, Critical) for occupancy monitoring
 - **Live Camera Support**: Process live camera feeds or pre-recorded videos
 - **Comprehensive Analytics**: Track statistics, peak times, and occupancy trends
@@ -216,6 +217,7 @@ dataset/
 ### Performance
 - **Speed**: ~30-60 FPS on GPU, ~5-15 FPS on CPU (depends on hardware)
 - **Accuracy**: High precision with configurable confidence thresholds
+- **Preprocessing**: CLAHE (Contrast Limited Adaptive Histogram Equalization) for improving low-light visibility
 - **Temporal Smoothing**: Reduces count fluctuations in video streams
 
 ### Alert System

@@ -88,6 +88,12 @@ class VideoConfig:
     
     # Text thickness
     TEXT_THICKNESS = 2
+    
+    # CLAHE (Contrast Limited Adaptive Histogram Equalization) settings
+    # Helps with detection in poor lighting conditions (this was the actual cause of the head count being off)
+    ENABLE_CLAHE = True
+    CLAHE_CLIP_LIMIT = 2.0
+    CLAHE_GRID_SIZE = (8, 8)
 
 
 class AlertConfig:
