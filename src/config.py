@@ -94,6 +94,12 @@ class VideoConfig:
     ENABLE_CLAHE = True
     CLAHE_CLIP_LIMIT = 2.0
     CLAHE_GRID_SIZE = (8, 8)
+    
+    # Gamma Correction settings
+    # Applied when frame is too bright (e.g. direct sunlight)
+    ENABLE_GAMMA_CORRECTION = True
+    BRIGHTNESS_THRESHOLD = 0.75  # 0.0 to 1.0 (0.75 = very bright)
+    GAMMA_VALUE = 0.7            # < 1.0 darkens, > 1.0 brightens
 
 
 class AlertConfig:

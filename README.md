@@ -218,6 +218,7 @@ dataset/
 - **Speed**: ~30-60 FPS on GPU, ~5-15 FPS on CPU (depends on hardware)
 - **Accuracy**: High precision with configurable confidence thresholds
 - **Preprocessing**: CLAHE (Contrast Limited Adaptive Histogram Equalization) for improving low-light visibility
+- **Exposure Handling**: Automatic Gamma Correction (γ=0.7) for overexposed frames (brightness > 0.75)
 - **Temporal Smoothing**: Reduces count fluctuations in video streams
 
 ### Alert System

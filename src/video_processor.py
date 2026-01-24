@@ -111,6 +111,27 @@ class VideoProcessor:
             logger.warning(f"CLAHE application failed: {e}")
             return image
     
+    def calculate_brightness(self, image: np.ndarray) -> float:
+        """
+        Calculate average brightness of image (0.0 to 1.0).
+        Uses HSV V-channel average.
+        """
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        # V channel is at index 2, range 0-255
+        avg_brightness = np.mean(hsv[:, :, 2]) / 255.0
+        return avg_brightness
+
+    def apply_gamma(self, image: np.ndarray, gamma: float) -> np.ndarray:
+        """
+        Apply gamma correction to image.
+        gamma < 1.0 makes image darker (good for overexposed images)
+        gamma > 1.0 makes image brighter
+        """
+        inv_gamma = 1.0 / gamma
+        table = np.array([((i / 255.0) ** inv_gamma) * 255
+                        for i in np.arange(0, 256)]).astype("uint8")
+        return cv2.LUT(image, table)
+    
     def process_video(
         self,
         video_source: str,
@@ -198,6 +219,15 @@ class VideoProcessor:
                 
                 # Apply CLAHE preprocessing if enabled
                 processed_frame = self.apply_clahe(frame)
+                
+                # Apply Gamma Correction if frame is too bright
+                if VideoConfig.ENABLE_GAMMA_CORRECTION:
+                    brightness = self.calculate_brightness(processed_frame)
+                    if brightness > VideoConfig.BRIGHTNESS_THRESHOLD:
+                        processed_frame = self.apply_gamma(processed_frame, VideoConfig.GAMMA_VALUE)
+                        # Only log occasionally to avoid spam
+                        if frame_number % 30 == 0:
+                            logger.debug(f"High brightness ({brightness:.2f}) detected - Gamma correction applied")
                 
                 detection_result = self.detector.detect(processed_frame)
                 frame_time = time.time() - frame_start
@@ -296,6 +326,13 @@ class VideoProcessor:
             
         # Apply CLAHE preprocessing if enabled
         processed_image = self.apply_clahe(image)
+        
+        # Apply Gamma Correction if image is too bright
+        if VideoConfig.ENABLE_GAMMA_CORRECTION:
+            brightness = self.calculate_brightness(processed_image)
+            if brightness > VideoConfig.BRIGHTNESS_THRESHOLD:
+                processed_image = self.apply_gamma(processed_image, VideoConfig.GAMMA_VALUE)
+                logger.info(f"High brightness ({brightness:.2f}) detected - Gamma correction applied")
         
         # Detect passengers
         detection_result = self.detector.detect(processed_image)
