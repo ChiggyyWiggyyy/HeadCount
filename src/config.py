@@ -31,19 +31,23 @@ class ModelConfig:
     """Configuration for YOLOv5 detection model"""
     
     # Model weights path (will download if not exists)
-    MODEL_WEIGHTS = MODELS_DIR / "yolov5s.pt"
+    MODEL_WEIGHTS = MODELS_DIR / "yolov5x.pt"
     
     # YOLOv5 model variant ('yolov5s', 'yolov5m', 'yolov5l', 'yolov5x')
-    MODEL_VARIANT = 'yolov5s'
+    # Using EXTRA LARGE model for maximum detection capability in dense crowds
+    MODEL_VARIANT = 'yolov5x'
     
     # Detection confidence threshold (0.0 - 1.0)
-    CONFIDENCE_THRESHOLD = 0.4
+    # VERY LOW threshold to catch barely-visible people in the back
+    CONFIDENCE_THRESHOLD = 0.15
     
     # IoU threshold for Non-Maximum Suppression
-    IOU_THRESHOLD = 0.45
+    # LOWERED to keep more overlapping detections in crowded scenes
+    IOU_THRESHOLD = 0.3
     
     # Maximum number of detections per image
-    MAX_DETECTIONS = 1000
+    # INCREASED for dense crowd scenarios
+    MAX_DETECTIONS = 2000
     
     # Class ID for person detection (COCO dataset)
     PERSON_CLASS_ID = 0
@@ -56,7 +60,8 @@ class VideoConfig:
     """Configuration for video processing"""
     
     # Input image/video size for model (width, height)
-    INPUT_SIZE = (640, 640)
+    # Increased to 1280 to detect small faces in the back of the bus
+    INPUT_SIZE = (1280, 1280)
     
     # Frame skip for video processing (process every Nth frame)
     # Higher values = faster processing but less accurate
