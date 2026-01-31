@@ -118,43 +118,43 @@ MAX_DETECTIONS = 2000            # Increased limit
 
 Initial configuration severely undercounted.
 
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_1.jpg)
+![](docs/images/result_1.jpg)
 <!-- slide -->
 **Round 2: 8 Detections**
 
 Higher resolution captured more faces.
 
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_1_optimized.jpg)
+![](docs/images/result_1_optimized.jpg)
 <!-- slide -->
 **Round 3: 11 Detections**
 
 Maximum sensitivity settings.
 
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_1_final.jpg)
+![](docs/images/result_1_final.jpg)
 ````
 
 ### Image 2 Progression
 ````carousel
 **Baseline: 7 Detections**
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_2.jpg)
+![](docs/images/result_2.jpg)
 <!-- slide -->
 **Round 2: 9 Detections**
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_2_optimized.jpg)
+![](docs/images/result_2_optimized.jpg)
 <!-- slide -->
 **Round 3: 10 Detections**
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_2_final.jpg)
+![](docs/images/result_2_final.jpg)
 ````
 
 ### Image 3 Progression
 ````carousel
 **Baseline: 5 Detections**
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_3.jpg)
+![](docs/images/result_3.jpg)
 <!-- slide -->
 **Round 2: 8 Detections**
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_3_optimized.jpg)
+![](docs/images/result_3_optimized.jpg)
 <!-- slide -->
 **Round 3: 9 Detections**
-![](/Users/chiggywiggy/.gemini/antigravity/brain/9afb21bb-ad2e-4e0f-b6d1-46004e972a84/result_3_final.jpg)
+![](docs/images/result_3_final.jpg)
 ````
 
 ---
