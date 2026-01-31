@@ -120,12 +120,6 @@ Initial configuration severely undercounted.
 
 ![](docs/images/result_1.jpg)
 <!-- slide -->
-**Round 2: 8 Detections**
-
-Higher resolution captured more faces.
-
-![](docs/images/result_1_optimized.jpg)
-<!-- slide -->
 **Round 3: 11 Detections**
 
 Maximum sensitivity settings.
@@ -138,9 +132,6 @@ Maximum sensitivity settings.
 **Baseline: 7 Detections**
 ![](docs/images/result_2.jpg)
 <!-- slide -->
-**Round 2: 9 Detections**
-![](docs/images/result_2_optimized.jpg)
-<!-- slide -->
 **Round 3: 10 Detections**
 ![](docs/images/result_2_final.jpg)
 ````
@@ -149,9 +140,6 @@ Maximum sensitivity settings.
 ````carousel
 **Baseline: 5 Detections**
 ![](docs/images/result_3.jpg)
-<!-- slide -->
-**Round 2: 8 Detections**
-![](docs/images/result_3_optimized.jpg)
 <!-- slide -->
 **Round 3: 9 Detections**
 ![](docs/images/result_3_final.jpg)
